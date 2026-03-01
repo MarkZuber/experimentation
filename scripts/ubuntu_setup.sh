@@ -150,6 +150,9 @@ done
 
 echo ">>> Linking dotfiles..."
 
+# bat/cat
+make_link /usr/bin/batcat ~/.local/bin/bat
+
 # zshrc
 make_link ~/dotfiles/zsh/.zshrc ~/.zshrc
 
