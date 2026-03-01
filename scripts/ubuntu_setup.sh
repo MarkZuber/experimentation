@@ -40,6 +40,7 @@ PACKAGES=(
     make
     cmake
     git-delta
+    dotnet-sdk-10.0
 )
 
 sudo add-apt-repository ppa:zhangsongcui3371/fastfetch -y
@@ -92,6 +93,16 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
 else
     echo ">>> Powerlevel10k already installed"
 fi
+
+# -----------------------------------------------------------------------------
+# Install git credential manager
+# thanks microsoft for not just making this a package you can install via apt install
+# -----------------------------------------------------------------------------
+
+pushd /tmp
+wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.7.0/gcm-linux-x64-2.7.0.deb
+sudo dpkg -i gcm-linux-x64-2.7.0.deb
+popd
 
 # -----------------------------------------------------------------------------
 # Install Node.js via nvm
