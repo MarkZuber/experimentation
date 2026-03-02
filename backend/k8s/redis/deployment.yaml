@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+        - name: cache-service
+          image: localhost:5000/cache-service:latest
+          ports:
+            - containerPort: 50052
+          env:
+            - name: REDIS_URL
+              value: "redis://localhost:6379"
+            - name: LOKI_URL
+              value: "http://loki.backend.svc.cluster.local:3100"
+            - name: RUST_LOG
+              value: "info"

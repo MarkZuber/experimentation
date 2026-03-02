@@ -29,6 +29,7 @@ PACKAGES=(
     neovim
     tmux
     fzf
+    gh
     ripgrep
     bat
     lsd
@@ -41,6 +42,9 @@ PACKAGES=(
     cmake
     git-delta
     dotnet-sdk-10.0
+    libssl-dev 
+    libpq-dev 
+    build-essential
 )
 
 sudo add-apt-repository ppa:zhangsongcui3371/fastfetch -y

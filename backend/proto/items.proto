@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package items;
+
+service Items {
+  rpc CreateItem(CreateItemRequest) returns (ItemResponse);
+  rpc GetItem(GetItemRequest) returns (ItemResponse);
+  rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
+  rpc UpdateItem(UpdateItemRequest) returns (ItemResponse);
+  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);
+}
+
+message Item {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string created_at = 4;
+  string updated_at = 5;
+}
+
+message CreateItemRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message GetItemRequest {
+  string id = 1;
+}
+
+message ListItemsRequest {}
+
+message ListItemsResponse {
+  repeated Item items = 1;
+}
+
+message UpdateItemRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message DeleteItemRequest {
+  string id = 1;
+}
+
+message DeleteItemResponse {
+  bool success = 1;
+}
+
+message ItemResponse {
+  Item item = 1;
+}

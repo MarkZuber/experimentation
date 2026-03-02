@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: experiproduct
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: experiproduct
+  template:
+    metadata:
+      labels:
+        app: experiproduct
+    spec:
+      containers:
+        - name: product-backend
+          image: localhost:5000/product-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_SERVICE_URL
+              value: "http://db-service.backend.svc.cluster.local:50051"
+            - name: CACHE_SERVICE_URL
+              value: "http://cache-service.backend.svc.cluster.local:50052"
+            - name: LOKI_URL
+              value: "http://loki.backend.svc.cluster.local:3100"
+            - name: GOOGLE_AUTH_ENABLED
+              value: "false"
+            - name: RUST_LOG
+              value: "info"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: experiproduct-secret
+                  key: JWT_SECRET
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: experiproduct-secret
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: experiproduct-secret
+                  key: GOOGLE_CLIENT_SECRET
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 30
+
+        - name: nginx
+          image: localhost:5000/product-frontend:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10

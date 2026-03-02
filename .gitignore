@@ -1,0 +1,28 @@
+# Rust
+target/
+
+# Node / frontend
+node_modules/
+dist/
+.npm/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+
+# Logs
+*.log
