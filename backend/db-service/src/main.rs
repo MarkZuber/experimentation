@@ -217,7 +217,18 @@ async fn main() -> Result<()> {
         .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/experiproduct".to_string());
 
     info!("Connecting to database: {}", database_url);
-    let pool = PgPool::connect(&database_url).await?;
+    let pool = loop {
+        match PgPool::connect(&database_url).await {
+            Ok(pool) => {
+                info!("Database connected");
+                break pool;
+            }
+            Err(e) => {
+                error!(error = %e, "Database not ready, retrying in 2s...");
+                tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+            }
+        }
+    };
 
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS items (

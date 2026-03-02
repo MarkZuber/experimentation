@@ -36,10 +36,23 @@ fi
 # containerd runtime (default — do NOT use --docker, it breaks cluster DNS).
 # --disable=traefik   we expose port 80 via our own LoadBalancer service.
 # --write-kubeconfig-mode=644  makes the kubeconfig readable without sudo.
+K3S_NEEDS_INSTALL=false
 if command -v k3s &>/dev/null; then
-    ok "k3s already installed ($(k3s --version | head -1))"
+    # If the installed k3s was started with --docker it breaks CoreDNS.
+    # Detect this and reinstall cleanly with the containerd runtime.
+    if grep -q -- '--docker' /etc/systemd/system/k3s.service 2>/dev/null; then
+        log "k3s is running with --docker (breaks cluster DNS). Reinstalling..."
+        sudo /usr/local/bin/k3s-uninstall.sh
+        K3S_NEEDS_INSTALL=true
+    else
+        ok "k3s already installed ($(k3s --version | head -1))"
+    fi
 else
-    log "Installing k3s..."
+    K3S_NEEDS_INSTALL=true
+fi
+
+if [ "$K3S_NEEDS_INSTALL" = "true" ]; then
+    log "Installing k3s (containerd runtime)..."
     curl -sfL https://get.k3s.io | sh -s -- \
         --disable=traefik \
         --write-kubeconfig-mode=644

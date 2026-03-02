@@ -16,6 +16,14 @@ for cmd in docker kubectl cargo npm; do
     fi
 done
 
+if ! docker info &>/dev/null 2>&1; then
+    echo "ERROR: Cannot connect to Docker daemon (permission denied on docker socket)."
+    echo "       You were recently added to the 'docker' group. Activate it with:"
+    echo "         newgrp docker"
+    echo "       Then re-run this script."
+    exit 1
+fi
+
 if [ ! -f "${HOME}/.kube/config" ]; then
     echo "ERROR: ~/.kube/config not found. Run scripts/setup-k8s.sh first."
     exit 1

@@ -14,12 +14,19 @@ export default function RedisPage() {
   const navigate = useNavigate()
   const [pairs, setPairs] = useState<KVPair[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const fetchPairs = async () => {
     setLoading(true)
     const resp = await fetch('/api/redis', { headers: authHeaders() })
     if (resp.status === 401) { navigate('/'); return }
-    if (resp.ok) setPairs(await resp.json())
+    if (resp.ok) {
+      setPairs(await resp.json())
+      setError('')
+    } else {
+      const body = await resp.json().catch(() => ({}))
+      setError(body.error || `Request failed (${resp.status})`)
+    }
     setLoading(false)
   }
 
@@ -36,6 +43,7 @@ export default function RedisPage() {
         Auto-refreshes every 5 seconds. The backend writes a heartbeat key every 5s with a 180s TTL.
       </p>
 
+      {error && <p style={{ color: '#fc8181', marginBottom: '1rem' }}>{error}</p>}
       {loading && pairs.length === 0 ? (
         <p style={{ color: '#a0a0b0' }}>Loading...</p>
       ) : (

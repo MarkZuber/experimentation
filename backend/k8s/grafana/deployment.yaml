@@ -27,8 +27,6 @@ spec:
               value: "false"
             - name: GF_SECURITY_ALLOW_EMBEDDING
               value: "true"
-            - name: GF_SERVER_DOMAIN
-              value: "localhost"
           volumeMounts:
             - name: grafana-datasources
               mountPath: /etc/grafana/provisioning/datasources

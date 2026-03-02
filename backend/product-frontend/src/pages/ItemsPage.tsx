@@ -85,11 +85,16 @@ export default function ItemsPage() {
 
   const createItem = async () => {
     if (!newName.trim()) return
-    await fetch('/api/items', {
+    const resp = await fetch('/api/items', {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({ name: newName, description: newDesc }),
     })
+    if (!resp.ok) {
+      const body = await resp.json().catch(() => ({}))
+      setError(body.error || `Failed to create item (${resp.status})`)
+      return
+    }
     setNewName('')
     setNewDesc('')
     fetchItems()
@@ -103,18 +108,28 @@ export default function ItemsPage() {
 
   const saveEdit = async () => {
     if (!editId) return
-    await fetch(`/api/items/${editId}`, {
+    const resp = await fetch(`/api/items/${editId}`, {
       method: 'PUT',
       headers: authHeaders(),
       body: JSON.stringify({ name: editName, description: editDesc }),
     })
+    if (!resp.ok) {
+      const body = await resp.json().catch(() => ({}))
+      setError(body.error || `Failed to update item (${resp.status})`)
+      return
+    }
     setEditId(null)
     fetchItems()
   }
 
   const deleteItem = async (id: string) => {
     if (!confirm('Delete this item?')) return
-    await fetch(`/api/items/${id}`, { method: 'DELETE', headers: authHeaders() })
+    const resp = await fetch(`/api/items/${id}`, { method: 'DELETE', headers: authHeaders() })
+    if (!resp.ok) {
+      const body = await resp.json().catch(() => ({}))
+      setError(body.error || `Failed to delete item (${resp.status})`)
+      return
+    }
     fetchItems()
   }
 

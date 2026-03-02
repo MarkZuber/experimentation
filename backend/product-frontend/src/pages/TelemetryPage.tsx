@@ -1,5 +1,5 @@
 export default function TelemetryPage() {
-  const grafanaUrl = `http://${window.location.hostname}:3000`
+  const grafanaUrl = `http://${window.location.hostname}:30300`
 
   return (
     <div style={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
